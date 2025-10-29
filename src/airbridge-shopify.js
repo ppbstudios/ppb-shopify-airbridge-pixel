@@ -1,6 +1,6 @@
 /**
  * Airbridge Shopify Integration
- * Version: 1.0.0
+ * Version: 1.0.1
  *
  * Centralized tracking script for Shopify + Airbridge
  * Requires AIRBRIDGE_CONFIG to be set before loading this script
@@ -9,7 +9,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "1.0.0";
+  const VERSION = "1.0.1";
 
   // ========== Configuration Validation ==========
   if (!window.AIRBRIDGE_CONFIG) {
@@ -136,6 +136,24 @@
   };
 
   // ========== Event Tracking ==========
+
+  // 🚨 CRITICAL: Check if analytics API is available
+  if (typeof analytics === "undefined") {
+    console.error(
+      "[Airbridge] Shopify analytics API not available. This script must run in Custom Pixel environment."
+    );
+    console.error(
+      "[Airbridge] If you see this in Shopify store, please check:"
+    );
+    console.error(
+      "  1. Custom Pixel is properly installed in Settings > Customer events"
+    );
+    console.error("  2. Custom Pixel status is 'Connected'");
+    console.error("  3. You are testing on the actual storefront (not Admin)");
+    return;
+  }
+
+  log("Shopify analytics API available, registering event subscribers...");
 
   // 1) Home Page View
   analytics.subscribe("page_viewed", (event) => {
@@ -349,4 +367,8 @@
   });
 
   log("All event subscribers registered successfully");
+  console.log(
+    "[Airbridge] Integration v" + VERSION + " loaded successfully for app:",
+    config.appKey
+  );
 })();
