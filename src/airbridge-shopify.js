@@ -1,28 +1,18 @@
-/**
- * Airbridge Shopify Integration
- * Version: 1.0.1
- *
- * Centralized tracking script for Shopify + Airbridge
- * Requires AIRBRIDGE_CONFIG to be set before loading this script
- */
-
 (function () {
   "use strict";
 
-  const VERSION = "1.0.1";
+  const VERSION = "1.0.2";
 
-  // ========== Configuration Validation ==========
+  // ========== Configuration ==========
   if (!window.AIRBRIDGE_CONFIG) {
-    console.error(
-      "[Airbridge] AIRBRIDGE_CONFIG not found. Please set it before loading this script."
-    );
+    console.error("[Airbridge] AIRBRIDGE_CONFIG not found");
     return;
   }
 
   const config = window.AIRBRIDGE_CONFIG;
 
   if (!config.appKey || !config.webToken) {
-    console.error("[Airbridge] Missing required config: appKey or webToken");
+    console.error("[Airbridge] Missing appKey or webToken");
     return;
   }
 
@@ -34,12 +24,8 @@
     }
   }
 
-  log("Initializing integration v" + VERSION);
-  log("Config:", {
-    appKey: config.appKey,
-    storeName: config.storeName,
-    region: config.region,
-  });
+  log("Initializing v" + VERSION);
+  log("Config:", config);
 
   // ========== Airbridge SDK Loader ==========
   (function (a_, i_, r_, _b, _r, _i, _d, _g, _e) {
@@ -98,16 +84,13 @@
 
   // ========== Utility Functions ==========
   const AB = {
-    // Safe string conversion
     s: (v, fb = "") => (v == null || v === "" ? fb : String(v)),
 
-    // Safe number conversion
     n: (v, fb = 0) => {
       const n = Number(v);
       return Number.isFinite(n) ? n : fb;
     },
 
-    // Convert Shopify product/variant to Airbridge products array
     products(itemsOrVariant) {
       const toAB = (v) => ({
         productID: v?.product?.id || v?.id || undefined,
@@ -125,7 +108,6 @@
       return [toAB(itemsOrVariant)];
     },
 
-    // Generate product action label
     productActionLabel(v) {
       const pid = v?.product?.id || v?.id || "EMPTY_ID";
       const brand = v?.product?.vendor || "EMPTY_VENDOR";
@@ -137,23 +119,7 @@
 
   // ========== Event Tracking ==========
 
-  // 🚨 CRITICAL: Check if analytics API is available
-  if (typeof analytics === "undefined") {
-    console.error(
-      "[Airbridge] Shopify analytics API not available. This script must run in Custom Pixel environment."
-    );
-    console.error(
-      "[Airbridge] If you see this in Shopify store, please check:"
-    );
-    console.error(
-      "  1. Custom Pixel is properly installed in Settings > Customer events"
-    );
-    console.error("  2. Custom Pixel status is 'Connected'");
-    console.error("  3. You are testing on the actual storefront (not Admin)");
-    return;
-  }
-
-  log("Shopify analytics API available, registering event subscribers...");
+  log("Registering event subscribers...");
 
   // 1) Home Page View
   analytics.subscribe("page_viewed", (event) => {
@@ -366,9 +332,9 @@
     }
   });
 
-  log("All event subscribers registered successfully");
+  log("All event subscribers registered");
   console.log(
-    "[Airbridge] Integration v" + VERSION + " loaded successfully for app:",
+    "[Airbridge] Integration v" + VERSION + " loaded for app:",
     config.appKey
   );
 })();
