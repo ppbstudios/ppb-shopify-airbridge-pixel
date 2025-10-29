@@ -14,12 +14,8 @@
       return;
     }
 
-    const DEBUG = config.debug || false;
-
     function log(...args) {
-      if (DEBUG) {
-        console.log("[Airbridge]", ...args);
-      }
+      console.log("[Airbridge]", ...args);
     }
 
     // ========== Airbridge SDK Loader ==========
@@ -343,9 +339,6 @@
     });
 
     log("All event subscribers registered");
-    console.log(
-      "[Airbridge] Integration v" + VERSION + " loaded for:",
-      config.storeName
-    );
+    console.log("[Airbridge] Integration v" + VERSION + " loaded");
   }; // end of AirbridgeShopifyInit
 })();
